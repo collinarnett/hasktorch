@@ -6,6 +6,7 @@
     _module.args = {
       pkgs = import inputs.nixpkgs {
         inherit system;
+        config.cudaSupport = false;
         overlays = [
           inputs.haskell-nix.overlay
           inputs.tokenizers.overlay

@@ -37,6 +37,6 @@ in {
   torch_cpu = torch;
   torch_cuda = torch;
 
-  datasets = final.callPackage ./datasets.nix {};
-  hasktorch = final.callPackage ./package.nix {};
+  # datasets = final.callPackage ./datasets.nix {};
+  # hasktorch = final.callPackage ./package.nix {};
 }

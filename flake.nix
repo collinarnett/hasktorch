@@ -6,8 +6,7 @@
       url = "github:hasktorch/tokenizers/flakes";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    haskell-nix.url = "github:input-output-hk/haskell.nix";
-    nixpkgs.follows = "haskell-nix/nixpkgs-2305";
+    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     flake-parts = {
       url = "github:hercules-ci/flake-parts";
       inputs.nixpkgs-lib.follows = "nixpkgs";
@@ -29,7 +28,6 @@
   outputs = {
     self,
     tokenizers,
-    haskell-nix,
     nixpkgs,
     flake-parts,
     nixgl,
@@ -56,12 +54,28 @@
             tools.haskell-language-server = "latest";
           };
       in {
-        legacyPackages = { 
+        legacyPackages = {
           inherit (pkgs) datasets;
           default = pkgs.hasktorch;
           cuda = pkgsCuda.hasktorch;
         };
-        packages.default = pkgs.hasktorch.hsPkgs.hasktorch.components.library;
+        packages.default =
+          (pkgs.haskellPackages.extend (pkgs.lib.composeManyExtensions [
+            (pkgs.haskell.lib.compose.packageSourceOverrides {
+              libtorch-ffi-helper = ./libtorch-ffi-helper;
+              codegen = ./codegen;
+              hasktorch = ./hasktorch;
+            })
+            (final: prev: {
+              libtorch-ffi = final.callCabal2nix "libtorch-ffi" ./libtorch-ffi {inherit (pkgs) c10 torch torch_cpu;};
+            })
+            (final: prev: {
+              libtorch-ffi = pkgs.haskell.lib.compose.appendConfigureFlags [
+                "--extra-include-dirs=${pkgs.lib.getDev pkgs.torch}/include/torch/csrc/api/include"
+              ] (prev.libtorch-ffi);
+            })
+          ]))
+          .libtorch-ffi;
         packages.cuda = pkgsCuda.hasktorch.hsPkgs.hasktorch.components.library;
         devShells.default = hasktorchFor pkgs;
         devShells.cuda = pkgsCuda.hasktorch.shellFor {

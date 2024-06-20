@@ -8,7 +8,7 @@ final: prev: let
   inherit
     (final.haskell.lib.compose)
     appendConfigureFlag
-    disableLibraryProfiling
+    addBuildDepends
     doJailbreak
     dontCheck
     ;
@@ -27,27 +27,29 @@ in {
             prev.haskell.packages.${ghcName}.extend
             (hfinal: hprev: {
               # Hasktorch Packages
+              examples = hfinal.callCabal2nix "examples" ../examples {};
+              bounding-box = hfinal.callCabal2nix "bounding-box" ../experimental/bounding-box {};
+              # dataloader-cifar10 = hfinal.callCabal2nix "dataloader-cifar10" ../experimental/dataloader-cifar10 {};
+              untyped-nlp = hfinal.callCabal2nix "untyped-nlp" ../experimental/untyped-nlp {};
+              # gradually-typed-examples = hfinal.callCabal2nix "gradually-typed-examples" ../experimental/gradually-typed-examples {};
               codegen = hfinal.callCabal2nix "codegen" ../codegen {};
               hasktorch-gradually-typed =
                 lib.pipe
                 (hfinal.callCabal2nix "hasktorch-gradually-typed" ../experimental/gradually-typed {})
                 [
-                  dontCheck
-                  #  disableLibraryProfiling
                 ];
               hasktorch =
                 lib.pipe
                 (hfinal.callCabal2nix "hasktorch" ../hasktorch {})
                 [
+                  # NNPack error prevents tests from passing
                   dontCheck
-                  #  disableLibraryProfiling
                 ];
               libtorch-ffi-helper = hfinal.callCabal2nix "libtorch-ffi-helper" ../libtorch-ffi-helper {};
               libtorch-ffi =
                 lib.pipe
                 (hfinal.callCabal2nix "libtorch-ffi" ../libtorch-ffi {inherit torch c10 torch_cpu;})
                 [
-                  #  disableLibraryProfiling
                   (appendConfigureFlag
                     "--extra-include-dirs=${lib.getDev torch}/include/torch/csrc/api/include")
                 ];

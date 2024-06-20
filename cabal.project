@@ -4,10 +4,14 @@ packages:
     libtorch-ffi-helper/*.cabal
     hasktorch/*.cabal
     examples/*.cabal
---    experimental/bounding-box/*.cabal
+    experimental/bounding-box/*.cabal
+    experimental/untyped-nlp/*.cabal
+    experimental/gradually-typed/*.cabal
+--  Requires tokenizers, yet to be pulled in with Nix
+--    experimental/gradually-typed-examples/*.cabal
+--  Requires streaming-cassava which is extremely out of date
 --    experimental/dataloader-cifar10/*.cabal
---    experimental/untyped-nlp/*.cabal
-    experimental/*/*.cabal
+--    experimental/*/*.cabal
 
 source-repository-package
     type: git
@@ -25,10 +29,10 @@ source-repository-package
     location: https://github.com/hasktorch/type-errors-pretty
     tag: 32d7abec6a21c42a5f960d7f4133d604e8be79ec
 
-source-repository-package
-    type: git
-    location: https://github.com/hasktorch/streaming-cassava
-    tag: 1ecc4742beae22a2fe32e445a54d1990b6200249
+-- source-repository-package
+--     type: git
+--     location: https://github.com/hasktorch/streaming-cassava
+--     tag: 1ecc4742beae22a2fe32e445a54d1990b6200249
 
 source-repository-package
     type: git

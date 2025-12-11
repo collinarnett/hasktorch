@@ -1,5 +1,5 @@
 final: prev: let
-  inherit (final) lib libtorch-bin;
+  inherit (final) lib libtorch-bin cudaPackages;
   inherit
     (final.haskell.lib)
     overrideSrc
@@ -41,6 +41,8 @@ in {
                 [
                   (appendConfigureFlag
                     "--extra-include-dirs=${lib.getDev torch}/include/torch/csrc/api/include")
+                  (appendConfigureFlag
+                    "--extra-lib-dirs=${lib.getLib cudaPackages.cudatoolkit}/lib")
                 ];
 
               # Hasktorch Forks

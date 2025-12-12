@@ -15,6 +15,9 @@ let
   ghcName = "ghc984";
 in
 {
+  libtorch-bin = prev.libtorch-bin.overrideAttrs (old: {
+    nativeBuildInputs = old.nativeBuildInputs ++ [ cudaPackages.libcusparse ];
+  });
   haskell = prev.haskell // {
     packages = prev.haskell.packages // {
       ${ghcName} = prev.haskell.packages.${ghcName}.extend (

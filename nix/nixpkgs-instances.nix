@@ -8,6 +8,7 @@
         inherit system;
         config.cudaSupport = false;
         config.allowBroken = true;
+        config.allowUnfree = true;
         overlays = [
           (import ./overlay.nix)
         ];

@@ -36,14 +36,6 @@ in
           libtorch-ffi =
             lib.pipe (hfinal.callCabal2nix "libtorch-ffi" ../libtorch-ffi { inherit torch c10 torch_cpu; })
               [
-                (
-                  drv:
-                  drv.overrideAttrs (old: {
-                    preCheck = ''
-                      export LD_DEBUG=all ls
-                    '';
-                  })
-                )
                 (appendConfigureFlag "--extra-include-dirs=${lib.getDev torch}/include/torch/csrc/api/include")
               ];
 

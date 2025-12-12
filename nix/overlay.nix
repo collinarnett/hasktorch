@@ -37,7 +37,7 @@ in
                   drv:
                   drv.overrideAttrs (old: {
                     preCheck = ''
-                      export LD_DEBUG=libs
+                      export LD_DEBUG=all ls
                     '';
                   })
                 )

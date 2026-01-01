@@ -284,10 +284,13 @@ max ::
 max input = unsafePerformIO $ ATen.cast1 ATen.Managed.max_t input
 
 type family MeanDTypeValidation (device :: (D.DeviceType, Nat)) (dtype :: D.DType) :: Constraint where
-  MeanDTypeValidation '(deviceType, deviceIndex) dtype =
-    ( DTypeIsFloatingPoint '(deviceType, deviceIndex) dtype,
-      DTypeIsNotHalf '(deviceType, deviceIndex) dtype
+  MeanDTypeValidation '( 'D.CPU, 0) dtype =
+    ( DTypeIsFloatingPoint '( 'D.CPU, 0) dtype,
+      DTypeIsNotHalf '( 'D.CPU, 0) dtype
     )
+  MeanDTypeValidation '( 'D.CUDA, deviceIndex) dtype = DTypeIsFloatingPoint '( 'D.CUDA, deviceIndex) dtype
+  MeanDTypeValidation '( 'D.MPS, 0) dtype = DTypeIsFloatingPoint '( 'D.MPS, 0) dtype
+  MeanDTypeValidation '(deviceType, _) dtype = UnsupportedDTypeForDevice deviceType dtype
 
 -- | Computes the mean while carrying out a full reduction of all tensor dimensions.
 --

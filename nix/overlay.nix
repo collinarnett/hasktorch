@@ -12,7 +12,7 @@ let
   torch = libtorch-bin;
   c10 = libtorch-bin;
   torch_cpu = libtorch-bin;
-  ghcName = "ghc984";
+  ghcName = "ghc912";
 in
 {
   libtorch-bin = prev.libtorch-bin.overrideAttrs (old: {

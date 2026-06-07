@@ -39,7 +39,7 @@
           ...
         }:
         let
-          ghc = "ghc984";
+          ghc = "ghc912";
           mnist = (pkgs.callPackage ./nix/datasets.nix { }).mnist;
           mkHasktorchPackageSet =
             t: p:

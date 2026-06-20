@@ -8,6 +8,7 @@ let
     appendConfigureFlag
     doJailbreak
     dontCheck
+    overrideCabal
     ;
   torch = libtorch-bin;
   c10 = libtorch-bin;
@@ -74,6 +75,23 @@ in
           #   };
           # };
           singletons-base = dontCheck hprev.singletons-base;
+
+          # preCheck fix from https://github.com/NixOS/nixpkgs/pull/524100
+          ghc-typelits-extra = overrideCabal (drv: {
+            preCheck = (drv.preCheck or "") + ''
+              export NIX_GHC_PACKAGE_PATH_FOR_TEST=$PWD/dist/package.conf.inplace/:$packageConfDir:
+            '';
+          }) hprev.ghc-typelits-extra_0_5_3;
+          ghc-typelits-knownnat = overrideCabal (drv: {
+            preCheck = (drv.preCheck or "") + ''
+              export NIX_GHC_PACKAGE_PATH_FOR_TEST=$PWD/dist/package.conf.inplace/:$packageConfDir:
+            '';
+          }) hprev.ghc-typelits-knownnat_0_8_3;
+          ghc-typelits-natnormalise = overrideCabal (drv: {
+            preCheck = (drv.preCheck or "") + ''
+              export NIX_GHC_PACKAGE_PATH_FOR_TEST=$PWD/dist/package.conf.inplace/:$packageConfDir:
+            '';
+          }) hprev.ghc-typelits-natnormalise_0_9_5;
         }
       );
     };

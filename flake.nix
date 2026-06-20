@@ -75,6 +75,8 @@
                   cabal-install
                 ];
               nativeBuildInputs = p: [
+                  p.cabal-install
+                  p.haskell.packages.${ghc}.haskell-language-server
                   (p.python3.withPackages (pp: with pp; [
                     pyyaml
                     typing-extensions

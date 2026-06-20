@@ -31,6 +31,7 @@ in
           #     dontCheck
           #     #  disableLibraryProfiling
           #   ];
+          examples = hfinal.callCabal2nix "examples" ../examples { };
           hasktorch = hfinal.callCabal2nix "hasktorch" ../hasktorch { };
           libtorch-ffi-helper = hfinal.callCabal2nix "libtorch-ffi-helper" ../libtorch-ffi-helper { };
           libtorch-ffi =

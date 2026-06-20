@@ -67,6 +67,7 @@
                 p: with p; [
                   codegen
                   hasktorch
+                  examples
                   # Cannot be built until type-level-rewrite-rules supports GHC 9.8
                   # hasktorch-gradually-typed
                   libtorch-ffi

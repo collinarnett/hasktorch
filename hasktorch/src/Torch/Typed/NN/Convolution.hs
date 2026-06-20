@@ -67,11 +67,11 @@ data
 -- The constraints on this one are _very_ involved, so the partial signatures
 -- make the code significantly cleaner.
 conv1dForward ::
-  forall stride padding.
+  forall stride padding n lIn lOut inputChannelSize outputChannelSize kernelSize dtype device.
   _ =>
-  Conv1d _ _ _ _ _ ->
-  Tensor _ _ _ ->
-  Tensor _ _ _
+  Conv1d inputChannelSize outputChannelSize kernelSize dtype device ->
+  Tensor device dtype '[n, inputChannelSize, lIn] ->
+  Tensor device dtype '[n, outputChannelSize, lOut]
 conv1dForward Conv1d {..} input =
   conv1d @stride @padding
     (toDependent weight)
@@ -150,11 +150,11 @@ data
 -- The constraints on this one are _very_ involved, so the partial signatures
 -- make the code significantly cleaner.
 conv2dForward ::
-  forall stride padding.
+  forall stride padding n inputChannelSize outputChannelSize kernelSize0 kernelSize1 inputSize0 inputSize1 outputSize0 outputSize1 dtype device.
   _ =>
-  Conv2d _ _ _ _ _ _ ->
-  Tensor _ _ _ ->
-  Tensor _ _ _
+  Conv2d inputChannelSize outputChannelSize kernelSize0 kernelSize1 dtype device ->
+  Tensor device dtype '[n, inputChannelSize, inputSize0, inputSize1] ->
+  Tensor device dtype '[n, outputChannelSize, outputSize0, outputSize1]
 conv2dForward Conv2d {..} input =
   conv2d @stride @padding
     (toDependent weight)
@@ -243,11 +243,11 @@ data
 -- The constraints on this one are _very_ involved, so the partial signatures
 -- make the code significantly cleaner.
 conv3dForward ::
-  forall stride padding.
+  forall stride padding n inputChannelSize outputChannelSize kernelSize0 kernelSize1 kernelSize2 inputSize0 inputSize1 inputSize2 outputSize0 outputSize1 outputSize2 dtype device.
   _ =>
-  Conv3d _ _ _ _ _ _ _ ->
-  Tensor _ _ _ ->
-  Tensor _ _ _
+  Conv3d inputChannelSize outputChannelSize kernelSize0 kernelSize1 kernelSize2 dtype device ->
+  Tensor device dtype '[n, inputChannelSize, inputSize0, inputSize1, inputSize2] ->
+  Tensor device dtype '[n, outputChannelSize, outputSize0, outputSize1, outputSize2]
 conv3dForward Conv3d {..} input =
   conv3d @stride @padding
     (toDependent weight)
@@ -334,11 +334,11 @@ data
 -- The constraints on this one are _very_ involved, so the partial signatures
 -- make the code significantly cleaner.
 convTranspose1dForward ::
-  forall stride padding.
+  forall stride padding n inputChannelSize outputChannelSize kernelSize inputSize outputSize dtype device.
   _ =>
-  ConvTranspose1d _ _ _ _ _ ->
-  Tensor _ _ _ ->
-  Tensor _ _ _
+  ConvTranspose1d inputChannelSize outputChannelSize kernelSize dtype device ->
+  Tensor device dtype '[n, inputChannelSize, inputSize] ->
+  Tensor device dtype '[n, outputChannelSize, outputSize]
 convTranspose1dForward ConvTranspose1d {..} input =
   convTranspose1d @stride @padding
     (toDependent weight)
@@ -417,11 +417,11 @@ data
 -- The constraints on this one are _very_ involved, so the partial signatures
 -- make the code significantly cleaner.
 convTranspose2dForward ::
-  forall stride padding.
+  forall stride padding n inputChannelSize outputChannelSize kernelSize0 kernelSize1 inputSize0 inputSize1 outputSize0 outputSize1 dtype device.
   _ =>
-  ConvTranspose2d _ _ _ _ _ _ ->
-  Tensor _ _ _ ->
-  Tensor _ _ _
+  ConvTranspose2d inputChannelSize outputChannelSize kernelSize0 kernelSize1 dtype device ->
+  Tensor device dtype '[n, inputChannelSize, inputSize0, inputSize1] ->
+  Tensor device dtype '[n, outputChannelSize, outputSize0, outputSize1]
 convTranspose2dForward ConvTranspose2d {..} input =
   convTranspose2d @stride @padding
     (toDependent weight)
@@ -510,11 +510,11 @@ data
 -- The constraints on this one are _very_ involved, so the partial signatures
 -- make the code significantly cleaner.
 convTranspose3dForward ::
-  forall stride padding.
+  forall stride padding n inputChannelSize outputChannelSize kernelSize0 kernelSize1 kernelSize2 inputSize0 inputSize1 inputSize2 outputSize0 outputSize1 outputSize2 dtype device.
   _ =>
-  ConvTranspose3d _ _ _ _ _ _ _ ->
-  Tensor _ _ _ ->
-  Tensor _ _ _
+  ConvTranspose3d inputChannelSize outputChannelSize kernelSize0 kernelSize1 kernelSize2 dtype device ->
+  Tensor device dtype '[n, inputChannelSize, inputSize0, inputSize1, inputSize2] ->
+  Tensor device dtype '[n, outputChannelSize, outputSize0, outputSize1, outputSize2]
 convTranspose3dForward ConvTranspose3d {..} input =
   convTranspose3d @stride @padding
     (toDependent weight)

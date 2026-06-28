@@ -23,12 +23,14 @@ import Data.Finite
 import Data.Kind (Constraint)
 import Data.Proxy
 import Data.Reflection
+import Data.Word (Word64)
 import GHC.TypeLits
 import System.IO.Unsafe
 import qualified Torch.DType as D
 import qualified Torch.Device as D
 import qualified Torch.Functional as D
 import Torch.Internal.Cast
+import qualified Torch.Random as U
 import qualified Torch.Scalar as D
 import qualified Torch.Tensor as D
 import qualified Torch.TensorFactories as D
@@ -184,3 +186,27 @@ eyeSquare =
           . D.withDType (optionsRuntimeDType @'[n, n] @dtype @device)
           $ D.defaultOpts
       )
+
+newtype PureGenerator (device :: (D.DeviceType, Nat)) = UnsafePureGenerator U.PureGenerator
+
+mkPureGenerator :: forall device. KnownDevice device => Word64 -> IO (PureGenerator device)
+mkPureGenerator seed = UnsafePureGenerator <$> U.mkPureGenerator (deviceVal @device) seed
+
+type family MultinomialShape (samples :: Nat) (shape :: [Nat]) :: [Nat] where
+  MultinomialShape samples '[n] = '[samples]
+  MultinomialShape samples (m ': ns) = m ': MultinomialShape samples ns
+
+multinomial ::
+  forall samples shape dtype device.
+  (KnownNat samples) =>
+  -- | replacement
+  Bool ->
+  -- | input
+  Tensor device dtype shape ->
+  -- | generator
+  PureGenerator device ->
+  -- | output
+  (Tensor device 'D.Int64 (MultinomialShape samples shape), PureGenerator device)
+multinomial replacement input (UnsafePureGenerator g) =
+  let (out, g') = U.multinomial (toDynamic input) (natValI @samples) replacement g
+   in (UnsafeMkTensor out, UnsafePureGenerator g')

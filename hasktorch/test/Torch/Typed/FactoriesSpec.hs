@@ -105,3 +105,19 @@ spec' device =
         Device {deviceType = MPS, deviceIndex = 0} -> do
           let t = eyeSquare @10 @'Float @'( 'MPS, 0)
           checkDynamicTensorAttributes t
+      it "multinomial" $ case device of
+        Device {deviceType = CPU, deviceIndex = 0} -> do
+          g <- mkPureGenerator @'( 'CPU, 0) 0
+          let probs = ones :: Tensor '( 'CPU, 0) 'Float '[4]
+              (t, _) = multinomial @3 True probs g
+          checkDynamicTensorAttributes t
+        Device {deviceType = CUDA, deviceIndex = 0} -> do
+          g <- mkPureGenerator @'( 'CUDA, 0) 0
+          let probs = ones :: Tensor '( 'CUDA, 0) 'Float '[4]
+              (t, _) = multinomial @3 True probs g
+          checkDynamicTensorAttributes t
+        Device {deviceType = MPS, deviceIndex = 0} -> do
+          g <- mkPureGenerator @'( 'MPS, 0) 0
+          let probs = ones :: Tensor '( 'MPS, 0) 'Float '[4]
+              (t, _) = multinomial @3 True probs g
+          checkDynamicTensorAttributes t

@@ -13,6 +13,10 @@ module Torch.Random
     randint',
     normal,
     normal',
+    PureGenerator,
+    mkPureGenerator,
+    withPureGenerator,
+    multinomial,
   )
 where
 
@@ -28,6 +32,7 @@ import Torch.Device
 import Torch.Internal.Cast
 import Torch.Internal.Class (Castable (..))
 import qualified Torch.Internal.Const as ATen
+import qualified Torch.Internal.Managed.Native as LibTorchN
 import qualified Torch.Internal.Managed.TensorFactories as LibTorch
 import qualified Torch.Internal.Managed.Type.Generator as ATen
 import qualified Torch.Internal.Type as ATen
@@ -206,3 +211,41 @@ normal' ::
   -- | output
   (Tensor, Generator)
 normal' mean std size = normal mean std size defaultOpts
+
+-- | An RNG generator threaded as an immutable value: never mutated in place,
+-- advanced by cloning on each draw (see 'withPureGenerator').
+newtype PureGenerator = PureGenerator (ForeignPtr ATen.Generator)
+  deriving (Eq, Show)
+
+mkPureGenerator :: Device -> Word64 -> IO PureGenerator
+mkPureGenerator (Device CPU _) seed =
+  PureGenerator <$> ATen.newCPUGenerator seed
+mkPureGenerator (Device CUDA idx) seed = do
+  g <- ATen.newCUDAGenerator (fromIntegral idx)
+  ATen.generator_set_current_seed g seed
+  pure (PureGenerator g)
+mkPureGenerator (Device MPS _) seed = do
+  g <- ATen.newMPSGenerator
+  ATen.generator_set_current_seed g seed
+  pure (PureGenerator g)
+
+withPureGenerator :: PureGenerator -> (ForeignPtr ATen.Generator -> IO a) -> (a, PureGenerator)
+withPureGenerator (PureGenerator g) action = unsafePerformIO $ do
+  g' <- ATen.generator_clone g
+  a <- action g'
+  pure (a, PureGenerator g')
+{-# NOINLINE withPureGenerator #-}
+
+multinomial ::
+  -- | t
+  Tensor ->
+  -- | num_samples
+  Int ->
+  -- | replacement
+  Bool ->
+  -- | generator
+  PureGenerator ->
+  -- | output
+  (Tensor, PureGenerator)
+multinomial probs numSamples replacement gen =
+  withPureGenerator gen (\g -> cast4 LibTorchN.multinomial_tlbG probs numSamples replacement g)
